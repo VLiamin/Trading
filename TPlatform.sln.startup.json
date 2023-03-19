@@ -1,0 +1,35 @@
+{
+  "Version": 3,
+
+  "ListAllProjects": false,
+
+  "MultiProjectConfigurations": {
+    "News GUI": {
+      "Projects": {
+        "GUI": {},
+        "NewsService": {}
+      }
+    },
+
+    "Full stack": {
+      "Projects": {
+        "AuthenticationService": {},
+        "BrokerService": {},
+        "DataBaseService": {},
+        "GUI": {},
+        "NewsService": {},
+        "OperationService": {},
+        "UserService": {}
+      }
+    },
+    "Back end": {
+      "Projects": {
+        "AuthenticationService": {},
+        "BrokerService": {},
+        "DataBaseService": {},
+        "OperationService": {},
+        "UserService": {}
+      }
+    }
+  }
+}

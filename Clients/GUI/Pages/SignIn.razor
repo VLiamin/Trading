@@ -1,0 +1,75 @@
+﻿@inject AuthStateProvider AuthenticationProvider
+@inject NavigationManager NavigationManager
+@inject ISessionStorageService Storage
+
+    <EditForm Model="@userInput" OnValidSubmit="@TrySignIn">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label for="Email">Email</label>
+            <InputText class="form-control" @bind-Value="userInput.Email" placeholder="example@gmail.com" />
+            <ValidationMessage For="() => userInput.Email" />
+        </div>
+        <div class="form-group">
+            <label for="Password">Password</label>
+            <InputText class="form-control" type="Password" @bind-Value="userInput.Password" placeholder="*****" />
+            <ValidationMessage For="() => userInput.Password" />
+        </div>
+        <a style="color: red; display: @(isHidden ? "none" : "block")" class="mb-1"> Wrong login or password</a>
+        <input type="submit" class="form-control button btn-primary" value="Sign in" />
+    </EditForm>
+
+
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState> authState { get; set; }
+
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    private SignInViewModel userInput;
+    bool isHidden = true;
+
+    private async Task TrySignIn()
+    {
+        var request = new LoginRequest
+        {
+            Email = userInput.Email,
+            Password = userInput.Password
+        };
+
+        try
+        {
+            await Storage.ClearAsync();
+
+            var userToken = await SignInner.SignIn(request);
+
+            Storage.SetItemAsync("id", userToken.UserId);
+            Storage.SetItemAsync("token", userToken.Body);
+
+            AuthenticationProvider.MarkSignedIn();
+            NavigationManager.NavigateTo("/userinfo");
+        }
+        catch (Exception e) when (
+                e is ForbiddenException
+                || e is NotFoundException
+                || e is InternalServerException)
+        {
+            userInput.Password = "";
+            isHidden = false;
+        }
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        BlazoredModal.SetTitle("Sign In");
+
+        userInput = new SignInViewModel();
+
+        var claims = (await authState).User;
+
+        if (claims.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/userinfo");
+        }
+    }
+}
+
