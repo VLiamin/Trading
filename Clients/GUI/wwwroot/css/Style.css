@@ -1,0 +1,124 @@
+﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+
+.header {
+    background: #f2f2f2;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.currencies {
+    width: 150px;
+    min-height: 100vh;
+    color: #fff;
+    background: #f2f2f2;
+    padding: 1px;
+    align-items: center;
+    transition: 0.5s width;
+}
+
+.сurrencyBar {
+    width: 100px;
+    height: 100px;
+    color: black;
+    background: #0366d6;
+    font-size: 0.7rem;
+    border: 1px solid #d7d7d7;
+    border-radius: 5px;
+    padding: 3px;
+    margin: 5px;
+    background-color: #fff;
+    display: block;
+}
+
+
+.col-12 {
+    width: 850px;
+}
+
+.cur-icon {
+    background-size: 75px 75px;
+}
+
+    .cur-icon .rub-icon {
+        background-image: url(/images/currencies/rub.png)
+    }
+
+    .cur-icon .usd-icon {
+        background-image: url(/images/currencies/usd.png)
+    }
+
+    .cur-icon .eur-icon {
+        background-image: url(/images/currencies/eur.png)
+    }
+
+    .cur-icon .cny-icon {
+        background-image: url(/images/currencies/cny.png)
+    }
+
+    .cur-icon .jpy-icon {
+        background-image: url(/images/currencies/jpy.png)
+    }
+
+    .cur-icon .gbp-icon {
+        background-image: url(/images/currencies/gbp.png)
+    }
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #f7f7f7;
+}
+
+.lib-panel {
+    margin-bottom: 20px;
+    padding: 0 20px 0 20px;
+}
+
+    .lib-panel img {
+        width: 100%;
+        background-color: transparent;
+    }
+
+    .lib-panel .row,
+    .lib-panel .col-md-6 {
+        padding: 0;
+        background-color: #FFFFFF;
+    }
+
+    .lib-panel .lib-row {
+        padding: 0 20px 0 20px;
+    }
+
+        .lib-panel .lib-row.lib-header {
+            background-color: #FFFFFF;
+            font-size: 20px;
+            padding: 10px 20px 0 20px;
+        }
+
+            .lib-panel .lib-row.lib-header .lib-header-seperator {
+                height: 2px;
+                width: 26px;
+                background-color: #d9d9d9;
+                margin: 7px 0 7px 0;
+            }
+
+        .lib-panel .lib-row.lib-desc {
+            position: relative;
+            display: block;
+            font-size: 13px;
+        }
+
+            .lib-panel .lib-row.lib-desc a {
+                position: absolute;
+                width: 100%;
+                bottom: 10px;
+                left: 20px;
+            }
+
+.row-margin-bottom {
+    margin-bottom: 20px;
+}
+
+.box-shadow {
+    -webkit-box-shadow: 0 0 10px 0 rgba(0,0,0,.10);
+    box-shadow: 0 0 10px 0 rgba(0,0,0,.10);
+}

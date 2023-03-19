@@ -1,0 +1,191 @@
+﻿@inject IModalService modal
+@inject NavigationManager NavigationManager
+
+<div style="width: 330px;">
+        <EditForm EditContext="@editContext" OnValidSubmit="@TrySignUp">
+            <DataAnnotationsValidator />
+            <Wizard Id="Wizard">
+                <WizardStep Name="1 Step">
+                    <div class="form-group mt-5">
+                        <label for="Name">Name:</label>
+                        <InputText class="form-control" @bind-Value="userInput.FirstName" placeholder="Your name" />
+                        <ValidationMessage For="@(() => userInput.FirstName)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Surname">Surname:</label>
+                        <InputText class="form-control" @bind-Value="userInput.LastName" placeholder="Your surname" />
+                        <ValidationMessage For="@(() => userInput.LastName)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Birthday">Birthday:</label>
+                        <InputDate class="form-control" @bind-Value="userInput.Birthday" />
+                        <ValidationMessage For="@(() => userInput.Birthday)" />
+                    </div>
+                    @if (errorServerMessage.Length != 0)
+                    {
+                        <label style="color: red;"> @errorServerMessage </label>
+                        <br />
+                    }
+                </WizardStep>
+                <WizardStep Name="2 Step">
+                    <div class="form-group">
+                        <label for="Email">Email</label>
+                        <InputText class="form-control" @bind-Value="userInput.Email" placeholder="example@gmail.com" />
+                        <ValidationMessage For="@(() => userInput.Email)" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Password">Password</label>
+                        <InputText class="form-control" type="password" @bind-Value="userInput.Password" placeholder="*****" />
+                        <ValidationMessage For="@(() => userInput.Password)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ConfirmPassword">Confirm Password</label>
+                        <InputText class="form-control" type="password" @bind-Value="userInput.ConfirmPassword" placeholder="*****" />
+                        <ValidationMessage For="@(() => userInput.ConfirmPassword)" />
+                    </div>
+                    <br />
+                    @if (errorServerMessage.Length != 0)
+                    {
+                        <label style="color: red;"> @errorServerMessage </label>
+                        <br />
+                    }
+                </WizardStep>
+                <WizardStep Name="3 Step">
+                    <div>
+                        <label for="files" class=" btn btn-success btn-sm">Upload Avatar</label>
+                        <label @onclick="ClearFile" class=" btn-sm">Clear</label>
+
+                        <img src="@avatar" width="200" height="200" class="rounded mx-auto d-block mb-3" alt="Avatar">
+                        <InputFile style="display: none" id="files" accept=".jpg, .jpeg, .png" OnChange="HandleSelection" />
+                    </div>
+                    <ValidationSummary />
+
+                    @if (errorServerMessage.Length != 0)
+                    {
+                        <label style="color: red;"> @errorServerMessage </label>
+                        <br />
+                    }
+                    @if (showLoading)
+                    {
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    }
+                </WizardStep>
+            </Wizard>
+        </EditForm>
+    </div>
+
+@code {
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    private SignUpViewModel userInput;
+    private EditContext editContext;
+    private bool showLoading = false;
+    private string errorServerMessage = "";
+    private string avatar = "/Picture/Avatar.svg";
+    private const string DefaultMessage = "/Picture/Avatar.svg";
+    private const int CMaxSizeOfImageInBytes = 2097152;
+
+    private bool HasError()
+    {
+        return !editContext.Validate();
+    }
+
+    public async Task TrySignUp()
+    {
+        errorServerMessage = "";
+
+        showLoading = true;
+        
+        if (HasError())
+        {
+            showLoading = false;
+
+            return;
+        }
+        try
+        {
+            var request = new CreateUserRequest
+            {
+                FirstName = userInput.FirstName,
+                LastName = userInput.LastName,
+                Birthday = userInput.Birthday,
+                Email = userInput.Email,
+                Password = userInput.Password,
+                AvatarExtension = userInput.AvatarExtension,
+                Avatar = userInput.Avatar
+            };
+
+            await SignUpper.SignUp(request);
+
+            BlazoredModal.Close();
+
+            modal.Show<SignIn>();
+
+        }
+        catch (BadRequestException)
+        {
+            errorServerMessage = "Something went wrong during registration";
+        }
+        catch (Exception)
+        {
+            errorServerMessage = "The server cannot process your request.";
+        }
+        finally
+        {
+            showLoading = false;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        userInput = new SignUpViewModel();
+
+        editContext = new EditContext(userInput);
+
+        BlazoredModal.SetTitle("Sign Up");
+    }
+
+    async Task HandleSelection(IFileListEntry[] files)
+    {
+        showLoading = true;
+        
+        var file = files[^1];
+
+        if (file != null)
+        {
+            if (file.Size > CMaxSizeOfImageInBytes)
+            {
+                errorServerMessage = "File is too big. Only 2 MB";
+
+                showLoading = false;
+
+                return;
+            }
+
+            using var ms = new MemoryStream();
+
+            await file.Data.CopyToAsync(ms);
+
+            userInput.AvatarExtension = Path.GetExtension(file.Name)?.TrimStart('.');
+
+            userInput.Avatar = ms.ToArray();
+
+            avatar = AvatarGetter.GetUserImage(userInput.Avatar, userInput.AvatarExtension);
+        }
+
+        showLoading = false;
+    }
+
+    private void ClearFile()
+    {
+        userInput.Avatar = null;
+
+        userInput.AvatarExtension = null;
+
+        avatar = DefaultMessage;
+    }
+
+}
