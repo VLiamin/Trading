@@ -87,7 +87,7 @@ namespace UserService.Commands
             try
             {
                 var createUserResult = await CreateUser(internalCreateUserRequest);
-                emailSender.SendEmail(request.Email, secretTokenEngine);
+                //emailSender.SendEmail(request.Email, secretTokenEngine);
 
                 return createUserResult;
             }

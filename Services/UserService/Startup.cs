@@ -121,6 +121,7 @@ namespace UserService
             app.UseHsts();
 
             app.UseRouting();
+
             app.UseMiddleware<CheckTokenMiddleware>();
 
             app.UseEndpoints(endpoints =>
