@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using UserService.Commands;
 using UserService.Interfaces;
 
-namespace UserServiceTests
+namespace UserServiceTests.Commands
 {
     public class EditUserTests
     {

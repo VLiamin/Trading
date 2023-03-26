@@ -56,11 +56,21 @@ namespace UserServiceTests.Commands
         }
 
         [Test]
-         public void ConfirmUserBadRequest()
+        public void ConfirmUserBadRequest()
         {
             resultMock
                .Setup(x => x.Message)
                .Throws(new BadRequestException());
+
+            Assert.ThrowsAsync<BadRequestException>(() => command.Execute(token));
+        }
+
+        [Test]
+        public void ConfirmUserCommandNotSuccessesfulUserConfirm()
+        {
+            resultMock
+                .Setup(x => x.Message)
+                .Returns(new OperationResult<bool> { Data = false });
 
             Assert.ThrowsAsync<BadRequestException>(() => command.Execute(token));
         }

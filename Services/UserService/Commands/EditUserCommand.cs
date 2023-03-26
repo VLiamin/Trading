@@ -63,6 +63,7 @@ namespace UserService.Commands
                     NewPasswordHash = ShaHash.GetPasswordHash(passwordRequest.NewPassword)
                 };
             }
+
             if (avatarRequest != null)
             {
                 avatarValidator.ValidateAndThrow(avatarRequest);

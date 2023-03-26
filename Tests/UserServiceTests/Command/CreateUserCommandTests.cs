@@ -13,7 +13,7 @@ using Kernel.CustomExceptions;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace UserServiceTests
+namespace UserServiceTests.Commands
 {
     public class CreateUserCommandTests
      {
