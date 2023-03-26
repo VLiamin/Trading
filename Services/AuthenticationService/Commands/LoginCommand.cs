@@ -35,8 +35,8 @@ namespace AuthenticationService.Commands
         {
             string passwordHash = ShaHash.GetPasswordHash(request.Password);
 
-            return credential.PasswordHash == passwordHash
-                && credential.Email == request.Email;
+            return credential.PasswordHash.Equals(passwordHash, StringComparison.CurrentCultureIgnoreCase)
+                && credential.Email.Equals(request.Email, StringComparison.CurrentCultureIgnoreCase);
         }
 
         public LoginCommand(
