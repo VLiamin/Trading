@@ -67,11 +67,6 @@ namespace BrokerService
 
             services.AddMassTransitHostedService();
 
-            services.AddLogging(log =>
-            {
-                log.ClearProviders();
-            });
-
             services.AddTransient<ILoggerProvider, LoggerProvider>(provider =>
             {
                 return new LoggerProvider(provider);

@@ -17,6 +17,4 @@ namespace NewsService
                     webBuilder.UseStartup<Startup>();
                 });
     }
-
-
 }
