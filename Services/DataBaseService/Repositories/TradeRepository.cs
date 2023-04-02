@@ -22,8 +22,7 @@ namespace DataBaseService.Repositories
 
         public TradeRepository(
             ITradeMapper mapper, TPlatformDbContext dbContext,
-            [FromServices] ILogger<TradeRepository> logger
-            )
+            [FromServices] ILogger<TradeRepository> logger)
         {
             this.mapper = mapper;
             this.dbContext = dbContext;
@@ -32,7 +31,7 @@ namespace DataBaseService.Repositories
 
         private DbUserBalance RegisterUserBalance(Guid userId)
         {
-            var dbUserBalance = new DbUserBalance()
+            DbUserBalance dbUserBalance = new DbUserBalance()
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
@@ -40,6 +39,7 @@ namespace DataBaseService.Repositories
                 BalanceInUsd = 0,
                 BalanceInEur = 0
             };
+
             dbContext.UserBalances.Add(dbUserBalance);
             dbContext.SaveChanges();
             logger.LogInformation($"New user {userId} balance added");
@@ -48,11 +48,12 @@ namespace DataBaseService.Repositories
 
         private void UpdateBalanceAfterTransaction(Transaction transaction)
         {
-            var dbUserBalance = dbContext.UserBalances.FirstOrDefault(
+            List<DbUserBalance> list = dbContext.UserBalances.ToList();
+            DbUserBalance dbUserBalance = dbContext.UserBalances.FirstOrDefault(
                 user => user.UserId == transaction.UserId);
 
-            var sign = transaction.Operation == OperationType.Sell ? 1 : -1;
-            var cost = sign * transaction.Count * transaction.Price;
+            int sign = transaction.Operation == OperationType.Sell ? 1 : -1;
+            decimal cost = sign * transaction.Count * transaction.Price;
 
             switch (transaction.Currency)
             {
@@ -75,10 +76,10 @@ namespace DataBaseService.Repositories
 
         private void UpdatePortfolioAfterTransaction(Transaction transaction)
         {
-            var dbPortfolio = dbContext.Portfolios.FirstOrDefault(
+            DbPortfolio dbPortfolio = dbContext.Portfolios.FirstOrDefault(
                 p => p.Figi == transaction.Figi && p.UserId == transaction.UserId);
 
-            if(dbPortfolio == null && transaction.Operation == OperationType.Buy)
+            if (dbPortfolio is null && transaction.Operation == OperationType.Buy)
             {
                 dbPortfolio = new DbPortfolio()
                 {
@@ -127,11 +128,13 @@ namespace DataBaseService.Repositories
 
         public Instrument GetInstrumentFromPortfolio(GetInstrumentFromPortfolioRequest request)
         {
-            var instrument = dbContext.Portfolios.FirstOrDefault(
+            DbPortfolio instrument = dbContext.Portfolios.FirstOrDefault(
                 instrument => instrument.UserId == request.UserId && instrument.Figi == request.Figi);
 
-            if (instrument == null)
+            if (instrument is null) {
                 return new Instrument();
+            }
+
             return new Instrument()
             {
                 Figi = request.Figi,
@@ -141,9 +144,9 @@ namespace DataBaseService.Repositories
 
         public List<InstrumentData> GetPortfolio(GetPortfolioRequest request)
         {
-            var portfolio = dbContext.Portfolios.Where(p => p.UserId == request.UserId);
+            IQueryable<DbPortfolio> portfolio = dbContext.Portfolios.Where(p => p.UserId == request.UserId);
 
-            if (portfolio == null)
+            if (portfolio is null)
             {
                 var exception = new NotFoundException("Portfolio not found");
                 logger.LogWarning(exception, $"{Guid.NewGuid()}_Portfolio of user {request.UserId} not found");
@@ -155,23 +158,26 @@ namespace DataBaseService.Repositories
 
         public UserBalance GetUserBalance(GetUserBalanceRequest request)
         {
-            var dbUserBalance = dbContext.UserBalances.FirstOrDefault(
+            DbUserBalance dbUserBalance = dbContext.UserBalances.FirstOrDefault(
                 user => user.UserId == request.UserId);
 
-            if (dbUserBalance == null)
+            if (dbUserBalance is null)
             {
                 dbUserBalance = RegisterUserBalance(request.UserId);
             }
+
             return mapper.MapToUserBalance(dbUserBalance);
         }
 
         public void UpdateUserBalance(UserBalance userBalance)
         {
-            var dbUserBalance = dbContext.UserBalances.FirstOrDefault(
+            DbUserBalance dbUserBalance = dbContext.UserBalances.FirstOrDefault(
                 user => user.UserId == userBalance.UserId);
 
-            if (dbUserBalance == null)
+            if (dbUserBalance is null)
+            {
                 dbUserBalance = RegisterUserBalance(userBalance.UserId);
+            }
 
             dbUserBalance.BalanceInRub = userBalance.BalanceInRub;
             dbUserBalance.BalanceInUsd = userBalance.BalanceInUsd;
@@ -184,10 +190,10 @@ namespace DataBaseService.Repositories
 
         public List<Transaction> GetUserTransactions(GetUserTransactions request)
         {
-            var dbUserTransactions = dbContext.Transactions
+            IQueryable<DbTransaction> dbUserTransactions = dbContext.Transactions
                 .Where(transaction => transaction.UserId == request.UserId);
 
-            var userTransactions = new List<Transaction>();
+            List<Transaction> userTransactions = new List<Transaction>();
 
             foreach (DbTransaction transaction in dbUserTransactions)
             {

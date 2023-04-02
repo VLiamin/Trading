@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DatabaseServiceTests.Repositories
 {
-    public class UserRepositoryTests
+    class UserRepositoryTests
     {
         #region Common
 
