@@ -8,6 +8,7 @@ using DataBaseService.Mappers.Interfaces;
 using DTO.BrokerRequests;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using DataBaseService.Database.Models;
 
 namespace DataBaseService.Repositories
 {
@@ -17,7 +18,10 @@ namespace DataBaseService.Repositories
         private readonly TPlatformDbContext dbContext;
         private readonly ILogger<UserRepository> logger;
 
-        public UserRepository(IUserMapper mapper, TPlatformDbContext dbContext, [FromServices] ILogger<UserRepository> logger)
+        public UserRepository(
+            IUserMapper mapper,
+            TPlatformDbContext dbContext,
+            [FromServices] ILogger<UserRepository> logger)
         {
             this.mapper = mapper;
             this.dbContext = dbContext;
@@ -60,7 +64,7 @@ namespace DataBaseService.Repositories
                 throw e;
             }
 
-            if(!dbCredential.IsActive)
+            if (!dbCredential.IsActive)
             {
                 var e = new ForbiddenException("User wasn't confirm or delete");
                 logger.LogWarning(e, "GetUserCredential: User {1} wasn't confirm or delete", email);
@@ -73,20 +77,23 @@ namespace DataBaseService.Repositories
         public InternalGetUserByIdResponse GetUserWithAvatarById(Guid userId)
         {
             var dbUser = dbContext.Users.FirstOrDefault(u => u.Id == userId);
-            if (dbUser == null)
+            if (dbUser is null)
             {
                 var e = new NotFoundException($"{Guid.NewGuid()}_User not found");
                 logger.LogWarning(e, e.Message);
                 throw e;
             }
-            var email = dbContext.UsersCredentials.FirstOrDefault(uc => uc.UserId == userId).Email;
 
-            var user = mapper.MapUser(dbUser, email);
+            string email = dbContext.UsersCredentials.FirstOrDefault(uc => uc.UserId == userId).Email;
+
+            User user = mapper.MapUser(dbUser, email);
 
             UserAvatar userAvatar = null;
-            var dbUserAvatar = dbContext.UsersAvatars.FirstOrDefault(ua => ua.UserId == userId);
+            DbUsersAvatars dbUserAvatar = dbContext.UsersAvatars.FirstOrDefault(ua => ua.UserId == userId);
             if (dbUserAvatar != null && dbUserAvatar.Avatar != null)
+            {
                 userAvatar = mapper.MapUserAvatar(dbUserAvatar);
+            }
 
             logger.LogInformation($"GetUserWithAvatarById: User with id {userId} was found and sent to UserService");
             return new InternalGetUserByIdResponse
@@ -98,7 +105,7 @@ namespace DataBaseService.Repositories
 
         public void DeleteUser(Guid userId)
         {
-            var dbUserCredential = dbContext.UsersCredentials.FirstOrDefault(uc => uc.UserId == userId);
+            DbUserCredential dbUserCredential = dbContext.UsersCredentials.FirstOrDefault(uc => uc.UserId == userId);
 
             if (dbUserCredential is null)
             {
@@ -107,19 +114,20 @@ namespace DataBaseService.Repositories
                 throw e;
             }
 
-            if(!dbUserCredential.IsActive)
+            if (!dbUserCredential.IsActive)
             {
                 var e = new BadRequestException($"{Guid.NewGuid()}_User was deleted earlier or not confirmed");
                 logger.LogWarning(e, $"{e.Message}, user id: {userId}");
                 throw e;
             }
+
             dbUserCredential.IsActive = false;
             dbContext.SaveChanges();
         }
 
         public void EditUser(User user, PasswordHashChangeRequest password, UserAvatar userAvatar)
         {
-            var dbUser = dbContext.Users.FirstOrDefault(uc => uc.Id == user.Id);
+            DbUser dbUser = dbContext.Users.FirstOrDefault(uc => uc.Id == user.Id);
             if (dbUser != null)
             {
                 dbUser.LastName = user.LastName;
@@ -148,6 +156,7 @@ namespace DataBaseService.Repositories
                         throw e;
                     }
                 }
+
                 if (userAvatar != null)
                 {
                     var dbUserAvatar = dbContext.UsersAvatars.FirstOrDefault(ua => ua.UserId == user.Id);

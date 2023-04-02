@@ -17,8 +17,7 @@ namespace OperationService.Commands
 
         public GetInstrumentsCommand(
             [FromServices] IRequestClient<GetInstrumentsRequest> client,
-            [FromServices] ILogger<GetInstrumentsCommand> logger
-            )
+            [FromServices] ILogger<GetInstrumentsCommand> logger)
         {
             this.client = client;
             this.logger = logger;
