@@ -26,6 +26,7 @@ namespace OperationService.Commands
 
         public async Task<IEnumerable<Candle>> Execute(GetCandlesRequest request)
         {
+            request.Interval = 500;
             return await SubscribeOnCandle(request);
         }
     }
