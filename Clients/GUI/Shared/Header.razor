@@ -80,12 +80,12 @@
             return;
         }
 
-        var requestResult = await UserGetter.GetUserById(userToken);
+ //       var requestResult = await UserGetter.GetUserById(userToken);
 
-        if (requestResult.Avatar != null)
-            imgSrc = AvatarGetter.GetUserImage(requestResult.Avatar, requestResult.AvatarExtension);
-        else
-            imgSrc = defaultImgSrc;
+   //     if (requestResult.Avatar != null)
+   //         imgSrc = AvatarGetter.GetUserImage(requestResult.Avatar, requestResult.AvatarExtension);
+  //      else
+  //          imgSrc = defaultImgSrc;
         StateHasChanged();
     }
 }

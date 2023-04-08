@@ -12,26 +12,28 @@ namespace GUI.Scripts
     public static class BrokerManager
     {
         public static async Task<IEnumerable<Instrument>> GetInstruments(
-                BrokerType broker,
-                string token,
-                InstrumentType instrument
-            )
+            BrokerType broker,
+            string token,
+            InstrumentType instrument)
         {
             const string url = "https://localhost:5009/operations/instruments/get";
 
-            var queryParams = new Dictionary<string, string>
+            Dictionary<string, string> queryParams = new Dictionary<string, string>
             {
                 { "bank", broker.ToString() },
                 { "token", token },
                 { "instrument", instrument.ToString() }
             };
 
-            var client = new RestClient<object, IEnumerable<Instrument>>(url, RestRequestType.GET, queryParams: queryParams);
+            RestClient<object, IEnumerable<Instrument>> client = new RestClient<object, IEnumerable<Instrument>>
+                (url, 
+                RestRequestType.GET, 
+                queryParams: queryParams);
 
             return await client.ExecuteAsync();
         }
 
-        public static async Task<bool> Trade (TradeRequest request)
+        public static async Task<bool> Trade(TradeRequest request)
         {
             const string url = "https://localhost:5009/operations/trade";
 
@@ -44,13 +46,16 @@ namespace GUI.Scripts
         {
             const string url = "https://localhost:5009/operations/instrument/getFromPortfolio";
 
-            var queryParams = new Dictionary<string, string>
+            Dictionary<string, string> queryParams = new Dictionary<string, string>
             {
                 { "userId",userId.ToString() },
                 { "figi", figi },
             };
 
-            var client = new RestClient<object, Instrument>(url, RestRequestType.GET, queryParams: queryParams);
+            RestClient<object, Instrument> client = new RestClient<object, Instrument>(
+                url,
+                RestRequestType.GET, 
+                queryParams: queryParams);
 
             return await client.ExecuteAsync();
         }
@@ -59,21 +64,21 @@ namespace GUI.Scripts
         {
             const string url = "https://localhost:5009/operations/userBalance/get";
 
-            var queryParams = new Dictionary<string, string>
+            Dictionary<string, string> queryParams = new Dictionary<string, string>
             {
                 { "userId", userId.ToString() }
             };
 
-            var client = new RestClient<object, UserBalance>(url, RestRequestType.GET, queryParams: queryParams);
+            RestClient<object, UserBalance> client = new RestClient<object, UserBalance>(url, RestRequestType.GET, queryParams: queryParams);
 
             return await client.ExecuteAsync();
         }
 
-        public static async Task <bool> UpdateUserBalance(UpdateUserBalanceRequest request)
+        public static async Task<bool> UpdateUserBalance(UpdateUserBalanceRequest request)
         {
             const string url = "https://localhost:5009/operations/userBalance/update";
 
-            var client = new RestClient<object, bool>(url, RestRequestType.PUT);
+            RestClient<object, bool> client = new RestClient<object, bool>(url, RestRequestType.PUT);
 
             return await client.ExecuteAsync(request);
         }

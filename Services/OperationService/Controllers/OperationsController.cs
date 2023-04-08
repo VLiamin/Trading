@@ -43,8 +43,7 @@ namespace OperationService.Controllers
         [HttpPost]
         public async Task <bool> Trade (
             [FromServices] ICommand<TradeRequest, bool> command,
-            [FromBody] TradeRequest request
-            )
+            [FromBody] TradeRequest request)
         {
             logger.LogInformation($"Trade request of user {request.UserId} received");
             return await command.Execute(request);
@@ -55,8 +54,7 @@ namespace OperationService.Controllers
         public async Task<Instrument> GetInstrumentFromPortfolio(
             [FromServices] ICommand<GetInstrumentFromPortfolioRequest, Instrument> command,
             [FromQuery] string userId,
-            [FromQuery] string figi
-            )
+            [FromQuery] string figi)
         {
             logger.LogInformation($"Get instrument {figi} from portfolio of user {userId} received");
             return await command.Execute(
@@ -71,8 +69,7 @@ namespace OperationService.Controllers
         [HttpGet]
         public async Task<List<InstrumentData>> GetPortfolio(
             [FromServices] ICommand<GetPortfolioRequest, List<InstrumentData>> command,
-            [FromHeader] Guid userId
-            )
+            [FromHeader] Guid userId)
         {
             return await command.Execute(new GetPortfolioRequest() { UserId = userId });
         }
@@ -81,8 +78,7 @@ namespace OperationService.Controllers
         [HttpGet]
         public async Task<UserBalance> GetUserBalance(
             [FromServices] ICommand<GetUserBalanceRequest, UserBalance> command,
-            [FromQuery] Guid userId
-            )
+            [FromQuery] Guid userId)
         {
             logger.LogInformation($"Get user {userId} balance  received");
             return await command.Execute(new GetUserBalanceRequest() { UserId = userId });
@@ -92,8 +88,7 @@ namespace OperationService.Controllers
         [HttpPut]
         public async Task<bool> UpdateUserBalance(
             [FromServices] ICommand<UpdateUserBalanceRequest, bool> command,
-            [FromBody] UpdateUserBalanceRequest request
-            )
+            [FromBody] UpdateUserBalanceRequest request)
         {
             logger.LogInformation($"Update user {request.UserId} balance  received");
             return await command.Execute(request);
@@ -106,8 +101,7 @@ namespace OperationService.Controllers
             [FromQuery] BrokerType broker,
             [FromQuery] string token,
             [FromQuery] string figi,
-            [FromQuery] int interval
-        )
+            [FromQuery] int interval)
         {
             return await command.Execute(
                 new GetCandlesRequest
@@ -173,8 +167,7 @@ namespace OperationService.Controllers
         [HttpGet]
         public async Task<IEnumerable<Transaction>> GetTransactions(
             [FromServices] ICommand<GetUserTransactionsRequest, IEnumerable<Transaction>> command,
-            [FromQuery] Guid userId
-        )
+            [FromQuery] Guid userId)
         {
             return await command.Execute(
                 new GetUserTransactionsRequest

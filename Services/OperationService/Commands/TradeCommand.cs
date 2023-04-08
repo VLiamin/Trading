@@ -21,8 +21,7 @@ namespace OperationService.Commands
         public TradeCommand(
             [FromServices] IRequestClient<InternalTradeRequest> tradeClient,
             [FromServices] IRequestClient<Transaction> saveTransactionClient,
-            [FromServices] ILogger<TradeCommand> logger
-            )
+            [FromServices] ILogger<TradeCommand> logger)
         {
             this.tradeClient = tradeClient;
             this.saveTransactionClient = saveTransactionClient;
@@ -31,21 +30,21 @@ namespace OperationService.Commands
 
         private async Task<Transaction> Trade(InternalTradeRequest request)
         {
-            var response = await tradeClient.GetResponse<OperationResult<Transaction>>(request);
+            Response<OperationResult<Transaction>> response = await tradeClient.GetResponse<OperationResult<Transaction>>(request);
 
             return OperationResultHandler.HandleResponse(response.Message);
         }
 
         private async Task<bool> SaveTransaction(Transaction transaction)
         {
-            var response = await saveTransactionClient.GetResponse<OperationResult<bool>>(transaction);
+            Response<OperationResult<bool>> response = await saveTransactionClient.GetResponse<OperationResult<bool>>(transaction);
 
             return OperationResultHandler.HandleResponse(response.Message);
         }
 
         public async Task<bool> Execute(TradeRequest request)
         {
-            var transaction = new Transaction()
+            Transaction transaction = new Transaction()
             {
                 Id = Guid.NewGuid(),
                 Broker = request.Broker,
@@ -56,7 +55,8 @@ namespace OperationService.Commands
                 Price = request.Price,
                 Currency = request.Currency
             };
-            var tradeRequest = new InternalTradeRequest()
+
+            InternalTradeRequest tradeRequest = new InternalTradeRequest()
             {
                 Token = request.Token,
                 Transaction = transaction
@@ -69,9 +69,9 @@ namespace OperationService.Commands
             }
             catch (BadRequestException e)
             {
-                var errorData = ErrorMessageFormatter.GetMessageData(e.Message);
+                (Guid?, Guid?, string) errorData = ErrorMessageFormatter.GetMessageData(e.Message);
 
-                var ex = new BadRequestException(errorData.Item3);
+                BadRequestException ex = new BadRequestException(errorData.Item3);
                 logger.LogWarning(ex, $"{Guid.NewGuid()}_{errorData.Item1}_{errorData.Item3}");
                 throw ex;
             }
