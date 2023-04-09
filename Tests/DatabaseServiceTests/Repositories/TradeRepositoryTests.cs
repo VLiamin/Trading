@@ -4,13 +4,14 @@ using DataBaseService.Mappers.Interfaces;
 using DataBaseService.Mappers;
 using DataBaseService.Repositories.Interfaces;
 using DataBaseService.Repositories;
-using DatabaseServiceTests.Comparators;
 using DTO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
+using DTO.BrokerRequests;
+using DTO.MarketBrokerObjects;
 
 namespace DatabaseServiceTests.Repositories
 {
@@ -24,79 +25,14 @@ namespace DatabaseServiceTests.Repositories
 
         private DbContextOptions<TPlatformDbContext> dbOptions;
 
-        private string firstName = "Adam";
-        private string lastName = "Yablokov";
-        private string email = "example@gmail.com";
-        private DateTime birth = DateTime.MinValue;
-        private string passwordHash = "passwordHash";
-        private string avatarExtension = "jpeg";
-        private byte[] avatar = { 0, 0, 0, 25 };
-
-        private User user;
-        private DbUser dbUser;
-        private UserCredential credential;
-        private DbUserCredential dbCredential;
-        private UserAvatar userAvatar;
-        private DbUsersAvatars dbUserAvatar;
-
         private DbUserCredential dbUserCredential;
         private Mock<ILogger<TradeRepository>> logger;
-        TPlatformDbContext dbContext;
 
         [OneTimeSetUp]
         public void Initialize()
         { 
             mapper = new TradeMapper();
             logger = new Mock<ILogger<TradeRepository>>();
-
-            user = new User
-            {
-                Id = userId,
-                FirstName = firstName,
-                LastName = lastName,
-                Birthday = birth,
-                Email = email
-            };
-
-            dbUser = new DbUser
-            {
-                Id = userId,
-                FirstName = firstName,
-                LastName = lastName,
-                Birthday = birth
-            };
-
-            credential = new UserCredential()
-            {
-                Id = credentialId,
-                UserId = userId,
-                Email = email,
-                PasswordHash = passwordHash
-            };
-
-            dbCredential = new DbUserCredential()
-            {
-                Id = credentialId,
-                UserId = userId,
-                Email = email,
-                PasswordHash = passwordHash
-            };
-
-            userAvatar = new UserAvatar
-            {
-                Id = userId,
-                AvatarExtension = avatarExtension,
-                Avatar = avatar,
-                UserId = dbUser.Id
-            };
-
-            dbUserAvatar = new DbUsersAvatars
-            {
-                Id = userId,
-                AvatarExtension = avatarExtension,
-                Avatar = avatar,
-                UserId = dbUser.Id
-            };
 
             dbOptions = new DbContextOptionsBuilder<TPlatformDbContext>()
                 .UseInMemoryDatabase(databaseName: "Trade")
@@ -110,15 +46,15 @@ namespace DatabaseServiceTests.Repositories
                 PasswordHash = "hashpassword",
                 IsActive = true
             };
-
-            dbContext = new TPlatformDbContext(dbOptions);
-            repository = new TradeRepository(mapper, dbContext, logger.Object);
-
+           
         }
 
         [Test]
         public void CreateTransactionTest()
         {
+            using TPlatformDbContext dbContextTr = new TPlatformDbContext(dbOptions);
+            repository = new TradeRepository(mapper, dbContextTr, logger.Object);
+
             Transaction transaction = new Transaction
             {
                 Id = Guid.NewGuid(),
@@ -138,15 +74,32 @@ namespace DatabaseServiceTests.Repositories
                 UserId = dbUserCredential.UserId
             };
 
-            dbContext.UsersCredentials.Add(dbUserCredential);
-            dbContext.UserBalances.Add(userBalance);
-            dbContext.Portfolios.Add(dbPortfolio);
-            dbContext.SaveChanges();
+            dbContextTr.UsersCredentials.Add(dbUserCredential);
+            dbContextTr.UserBalances.Add(userBalance);
+            dbContextTr.Portfolios.Add(dbPortfolio);
+            dbContextTr.SaveChanges();
 
             repository.SaveTransaction(transaction);
 
-            DbUserComparer comparer = new DbUserComparer();
-            Assert.AreEqual(1, dbContext.Transactions.CountAsync().Result);
+            Assert.AreEqual(1, dbContextTr.Transactions.CountAsync().Result);
+
+            dbContextTr.Dispose();
+        }
+
+        [Test]
+        public void GetUserBalanceTest()
+        {
+            using TPlatformDbContext dbContextBal = new TPlatformDbContext(dbOptions);
+            repository = new TradeRepository(mapper, dbContextBal, logger.Object);
+
+            UserBalance balance = repository.GetUserBalance(new GetUserBalanceRequest { UserId = dbUserCredential.UserId });
+
+            Assert.AreEqual(1000, balance.BalanceInRub);
+            Assert.AreEqual(0, balance.BalanceInEur);
+            Assert.AreEqual(0, balance.BalanceInUsd);
+            Assert.AreEqual(dbUserCredential.UserId, balance.UserId);
+
+            dbContextBal.Dispose();
         }
     }
 }
