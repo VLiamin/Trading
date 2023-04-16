@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataBaseService.Database.Models
 {
@@ -8,9 +9,12 @@ namespace DataBaseService.Database.Models
     {
 		public Guid Id { get; set; }
 		public Guid UserId { get; set; }
-		public decimal BalanceInRub { get; set; }
-		public decimal BalanceInUsd { get; set; }
-		public decimal BalanceInEur { get; set; }
+        [Column(TypeName = "decimal(18,4)")]
+        public decimal BalanceInRub { get; set; }
+        [Column(TypeName = "decimal(18,4)")]
+        public decimal BalanceInUsd { get; set; }
+        [Column(TypeName = "decimal(18,4)")]
+        public decimal BalanceInEur { get; set; }
     }
 
     public class DbTinkoffUserConfiguration : IEntityTypeConfiguration<DbUserBalance>
