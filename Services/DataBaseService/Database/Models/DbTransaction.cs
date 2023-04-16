@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataBaseService.Database.Models
 {
@@ -13,6 +14,7 @@ namespace DataBaseService.Database.Models
         public string Operation { get; set; }
         public string Figi { get; set; }
         public int Count { get; set; }
+        [Column(TypeName = "decimal(18,4)")]
         public decimal Price { get; set; }
         public string Currency { get; set; }
         public bool IsSuccess { get; set; }

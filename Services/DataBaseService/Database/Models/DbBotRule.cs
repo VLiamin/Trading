@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DataBaseService.Database.Models
 {
@@ -14,6 +15,7 @@ namespace DataBaseService.Database.Models
 
         public int TimeMarker { get; set; }
 
+        [Column(TypeName = "decimal(18,4)")]
         public decimal TriggerValue { get; set; }
 
         public class DbPortfolioInstrumentsConfiguration : IEntityTypeConfiguration<DbBotRule>
