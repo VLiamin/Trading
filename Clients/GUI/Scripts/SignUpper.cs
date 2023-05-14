@@ -1,6 +1,6 @@
 using DTO.RestRequests;
-using Kernel;
-using Kernel.Enums;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace GUI.Scripts
@@ -10,10 +10,15 @@ namespace GUI.Scripts
         public static async Task SignUp(CreateUserRequest user)
         {
             const string url = "https://localhost:5011/users/create";
+            const string devUrl = "https://194.67.103.237:5011/users/create";
 
-            var client = new RestClient<CreateUserRequest, bool>(url, RestRequestType.POST);
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
-            await client.ExecuteAsync(user);
+            HttpClient client = new HttpClient(clientHandler);
+
+            HttpResponseMessage response = await client.PostAsJsonAsync(
+                devUrl, user);
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-
-using FluentValidation;
 using DTO.NewsRequests.Currency;
 using DTO;
 using NewsService.Interfaces;

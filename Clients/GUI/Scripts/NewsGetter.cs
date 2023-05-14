@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using System.Text.Json;
 using DTO;
-using Kernel;
-using Kernel.Enums;
 
 namespace GUI.Scripts
 {
@@ -10,19 +9,22 @@ namespace GUI.Scripts
     {
         public static IEnumerable<NewsItem> GetNews(string feedUrl)
         {
-            const string url = "https://localhost:5007/news/getnews";
-
-            var queryParams = new Dictionary<string, string>
-            {
-                { "feedUrl", feedUrl }
-            };
-
             HttpClientHandler clientHandler = new HttpClientHandler();
             clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
-            RestClient<string, IEnumerable<NewsItem>> client = new RestClient<string, IEnumerable<NewsItem>>(url, RestRequestType.GET, queryParams: queryParams);
+            string devUrl = $"https://194.67.103.237:5007/news/getnews?feedUrl={feedUrl}";
+            string url = $"https://localhost:5007/news/getnews?feedUrl={feedUrl}";
 
-            return client.Execute();
+            HttpClient client2 = new HttpClient(clientHandler);
+            string content = 
+                client2.GetStringAsync(devUrl).Result;
+
+            return JsonSerializer.Deserialize<IEnumerable<NewsItem>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
         }
     }
 }

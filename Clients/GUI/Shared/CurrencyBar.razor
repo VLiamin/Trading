@@ -1,4 +1,10 @@
-﻿<p class="badge-dark" style="margin-bottom:1px">CURRENCY RATE</p>
+﻿@using System.Net.Http;
+@using Newtonsoft.Json;
+@using System.Text.Json;
+@using JsonSerializerText = System.Text.Json.JsonSerializer;
+@using System.Text;
+@using System.Net.Http.Json;
+<p class="badge-dark" style="margin-bottom:1px">CURRENCY RATE</p>
 @if (Rates != null)
 {
     @foreach (var r in Rates)
@@ -32,20 +38,21 @@
             req.CurrencyPublisher = CurrencyExchangeRateProviderTypes.CentralBank;
             req.CurrencyCodes = Codes;
             string url = "http://localhost:5006/News/currencies";
+            string devUrl = "https://194.67.103.237:5007/news/currencies";
 
-            RestClient<CurrencyRequest, List<ExchangeRate>> client = new RestClient<CurrencyRequest, List<ExchangeRate>>(url, RestRequestType.POST);
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
-            try
-            {
-                Rates = await client.ExecuteAsync(req);
-            }
-            catch (Exception)
-            {
-                ErrorFromServer = true;
-                Rates = null;
-            }
+            HttpClient client = new HttpClient(clientHandler);
+
+            HttpResponseMessage response = await client.PostAsJsonAsync(
+                devUrl, req);
+
+            Rates = await response.Content.ReadFromJsonAsync<List<ExchangeRate>>();
         }
         else
+        {
             await base.OnInitializedAsync();
+        }
     }
 }
