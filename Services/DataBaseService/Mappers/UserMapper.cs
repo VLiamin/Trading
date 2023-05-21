@@ -24,7 +24,8 @@ namespace DataBaseService.Mappers
                 Id = userCredential.Id,
                 UserId = userCredential.UserId,
                 Email = userCredential.Email,
-                PasswordHash = userCredential.PasswordHash
+                PasswordHash = userCredential.PasswordHash,
+                IsActive = true
             };
         }
 

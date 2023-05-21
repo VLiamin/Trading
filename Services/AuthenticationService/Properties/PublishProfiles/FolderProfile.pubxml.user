@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>D:\PublishTablet\PublishAuth</_PublishTargetUrl>
-    <History>True|2023-05-12T20:24:31.6481856Z;True|2023-05-11T18:14:17.2235347+03:00;True|2023-05-11T12:28:21.5645601+03:00;True|2023-05-11T12:18:29.7255040+03:00;</History>
+    <History>True|2023-05-19T16:29:32.6257059Z;True|2023-05-15T01:18:38.4043490+03:00;True|2023-05-12T23:24:31.6481856+03:00;True|2023-05-11T18:14:17.2235347+03:00;True|2023-05-11T12:28:21.5645601+03:00;True|2023-05-11T12:18:29.7255040+03:00;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

@@ -10,7 +10,7 @@ namespace GUI.Scripts
         public static async Task SignUp(CreateUserRequest user)
         {
             const string url = "https://localhost:5011/users/create";
-            const string devUrl = "https://194.67.103.237:5011/users/create";
+            const string devUrl = "http://194.67.103.237:5010/users/create";
 
             HttpClientHandler clientHandler = new HttpClientHandler();
             clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };

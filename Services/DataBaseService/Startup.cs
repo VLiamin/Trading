@@ -1,17 +1,14 @@
 using System;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-
 using DataBaseService.Database;
 using DataBaseService.BrokerConsumers;
 using DataBaseService.Utils;
 using DataBaseService.Repositories;
 using DataBaseService.Mappers;
-
 using MassTransit;
 using GreenPipes;
 using DataBaseService.Repositories.Interfaces;

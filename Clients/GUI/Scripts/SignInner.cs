@@ -15,7 +15,7 @@ namespace GUI.Scripts
         public static async Task<UserToken> SignIn(LoginRequest request)
         {
             const string url = "https://localhost:5001/authentication/login";
-            const string devUrl = "https://194.67.103.237:5001/authentication/login";
+            const string devUrl = "http://194.67.103.237:5000/authentication/login";
 
             HttpClientHandler clientHandler = new HttpClientHandler();
             clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };

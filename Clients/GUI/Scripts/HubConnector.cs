@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DTO;
+﻿using DTO;
 using DTO.BrokerRequests;
 using DTO.MarketBrokerObjects;
-using Kernel;
-using Kernel.Enums;
 using Microsoft.AspNetCore.SignalR.Client;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace GUI.Scripts
 {
@@ -15,8 +15,6 @@ namespace GUI.Scripts
     {
         public static async Task<IEnumerable<Candle>> SubscribeOnCandle(Action<Candle> OnReceivedAction, BrokerType broker, string figi, string token)
         {
-            const string url = "https://localhost:5009/operations/candles/get";
-
             var queryParams = new Dictionary<string, string>
             {
                 { "broker", broker.ToString() },
@@ -24,11 +22,22 @@ namespace GUI.Scripts
                 { "figi", figi }
             };
 
-            var client = new RestClient<object, IEnumerable<Candle>>(url, RestRequestType.GET, queryParams: queryParams);
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
-            var listCandles = await client.ExecuteAsync();
+            string devUrl = $"http://194.67.103.237:5008/operations/candles/get?bank=TinkoffBroker&token=t.8uALbj_cTXfAKh1LKm32L71ozCgcoW5C9we1EOOVgiv4AsPljD2t8AdWLxCP9qFlVzmnB4DhXv9MtF8ODvAO2Q&figi=TCS0013HRTL0";
+            string url = $"https://localhost:5009/operations/candles/get?bank={broker}&token={token}&figi={figi}";
 
-            var subscribeOnCandle = listCandles.ToList();
+            HttpClient client2 = new HttpClient(clientHandler);
+            string content =
+                client2.GetStringAsync(devUrl).Result;
+
+            List<Candle> subscribeOnCandle = JsonSerializer.Deserialize<IEnumerable<Candle>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                }).ToList();
 
             if (subscribeOnCandle.Count == 0)
             {
@@ -36,12 +45,30 @@ namespace GUI.Scripts
             }
 
             var hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:5009/CandleHub")
+                .WithUrl("http://194.67.103.237:5008/CandleHub",
+                options =>
+                {
+                    options.WebSocketConfiguration = conf =>
+                    {
+                        conf.RemoteCertificateValidationCallback = (message, cert, chain, errors) => { return true; };
+                    };
+                    options.HttpMessageHandlerFactory = factory => new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
+                    };
+                })
                 .Build();
 
             hubConnection.On<Candle>("ReceiveMessage", OnReceivedAction.Invoke);
 
-            await hubConnection.StartAsync();
+            try
+            {
+                await hubConnection.StartAsync();
+            }
+            catch (Exception e)
+            {
+
+            }
 
             await hubConnection.SendAsync("Subscribe", new GetCandlesRequest
             {

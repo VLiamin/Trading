@@ -4,8 +4,8 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project>
   <PropertyGroup>
-    <_PublishTargetUrl>D:\PublishNews</_PublishTargetUrl>
-    <History>True|2023-05-06T12:12:50.0367529Z;</History>
+    <_PublishTargetUrl>D:\PublishTablet\PublishNews</_PublishTargetUrl>
+    <History>True|2023-05-15T21:11:18.2494735Z;True|2023-05-16T00:05:51.8795247+03:00;True|2023-05-16T00:05:13.4141944+03:00;True|2023-05-06T15:12:50.0367529+03:00;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

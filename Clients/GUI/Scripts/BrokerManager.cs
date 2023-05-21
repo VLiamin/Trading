@@ -1,10 +1,11 @@
 ﻿using DTO;
 using DTO.MarketBrokerObjects;
 using DTO.RestRequests;
-using Kernel;
-using Kernel.Enums;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GUI.Scripts
@@ -16,71 +17,96 @@ namespace GUI.Scripts
             string token,
             InstrumentType instrument)
         {
-            const string url = "https://localhost:5009/operations/instruments/get";
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
-            Dictionary<string, string> queryParams = new Dictionary<string, string>
-            {
-                { "bank", broker.ToString() },
-                { "token", token },
-                { "instrument", instrument.ToString() }
-            };
+            string devUrl = $"http://194.67.103.237:5008/operations/instruments/get?bank={broker}&token={token}&instrument={instrument}";
+            string url = $"https://localhost:5009/operations/instruments/get?bank={broker}&token={token}&instrument={instrument}";
 
-            RestClient<object, IEnumerable<Instrument>> client = new RestClient<object, IEnumerable<Instrument>>
-                (url, 
-                RestRequestType.GET, 
-                queryParams: queryParams);
+            HttpClient client2 = new HttpClient(clientHandler);
+            string content =
+                client2.GetStringAsync(devUrl).Result;
 
-            return await client.ExecuteAsync();
+            return JsonSerializer.Deserialize<IEnumerable<Instrument>>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
         }
 
         public static async Task<bool> Trade(TradeRequest request)
         {
-            const string url = "https://localhost:5009/operations/trade";
+            string url = "https://localhost:5009/operations/trade";
+            string devUrl = "http://194.67.103.237:5008/operations/trade";
 
-            var client = new RestClient<object, bool>(url, RestRequestType.POST);
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
-            return await client.ExecuteAsync(request);
+            HttpClient client = new HttpClient(clientHandler);
+
+            HttpResponseMessage response = await client.PostAsJsonAsync(
+                devUrl, request);
+
+            var r = await response.Content.ReadFromJsonAsync<bool>();
+
+            return true;
         }
 
         public static async Task<Instrument> GetInstrumentFromPortfolio(Guid userId, string figi)
         {
-            const string url = "https://localhost:5009/operations/instrument/getFromPortfolio";
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
-            Dictionary<string, string> queryParams = new Dictionary<string, string>
-            {
-                { "userId",userId.ToString() },
-                { "figi", figi },
-            };
+            string devUrl = $"http://194.67.103.237:5008/operations/instrument/getFromPortfolio?userId={userId}&figi={figi}";
+            string url = $"https://localhost:5009/operations/instrument/getFromPortfolio?userId={userId}&figi={figi}";
 
-            RestClient<object, Instrument> client = new RestClient<object, Instrument>(
-                url,
-                RestRequestType.GET, 
-                queryParams: queryParams);
+            HttpClient client2 = new HttpClient(clientHandler);
+            string content =
+                client2.GetStringAsync(devUrl).Result;
 
-            return await client.ExecuteAsync();
+            return JsonSerializer.Deserialize<Instrument>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
         }
 
         public static async Task<UserBalance> GetUserBalance(Guid userId)
         {
-            const string url = "https://localhost:5009/operations/userBalance/get";
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
-            Dictionary<string, string> queryParams = new Dictionary<string, string>
-            {
-                { "userId", userId.ToString() }
-            };
+            string devUrl = $"http://194.67.103.237:5008/operations/userBalance/get?userId={userId}";
+            string url = $"https://localhost:5009/operations/userBalance/get?userId={userId}";
 
-            RestClient<object, UserBalance> client = new RestClient<object, UserBalance>(url, RestRequestType.GET, queryParams: queryParams);
+            HttpClient client2 = new HttpClient(clientHandler);
+            string content =
+                client2.GetStringAsync(devUrl).Result;
 
-            return await client.ExecuteAsync();
+            return JsonSerializer.Deserialize<UserBalance>(
+                content,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
         }
 
         public static async Task<bool> UpdateUserBalance(UpdateUserBalanceRequest request)
         {
-            const string url = "https://localhost:5009/operations/userBalance/update";
+            string url = "https://localhost:5009/operations/userBalance/update";
+            string devUrl = "http://194.67.103.237:5008/operations/userBalance/update";
 
-            RestClient<object, bool> client = new RestClient<object, bool>(url, RestRequestType.PUT);
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
-            return await client.ExecuteAsync(request);
+            HttpClient client = new HttpClient(clientHandler);
+
+            HttpResponseMessage response = await client.PutAsJsonAsync(
+                devUrl, request);
+
+            return await response.Content.ReadFromJsonAsync<bool>();
         }
     }
 }

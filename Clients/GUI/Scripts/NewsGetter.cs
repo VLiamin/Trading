@@ -12,7 +12,7 @@ namespace GUI.Scripts
             HttpClientHandler clientHandler = new HttpClientHandler();
             clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
-            string devUrl = $"https://194.67.103.237:5007/news/getnews?feedUrl={feedUrl}";
+            string devUrl = $"http://194.67.103.237:5006/news/getnews?feedUrl={feedUrl}";
             string url = $"https://localhost:5007/news/getnews?feedUrl={feedUrl}";
 
             HttpClient client2 = new HttpClient(clientHandler);

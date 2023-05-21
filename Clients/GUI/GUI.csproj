@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 	<PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Scripts\SignInner.cs~RF1054452b.TMP" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Blazored.Modal" Version="4.0.0" />
     <PackageReference Include="Blazored.SessionStorage" Version="1.0.11" />
