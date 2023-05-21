@@ -15,6 +15,11 @@ namespace OperationService
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseKestrel()
+                        .ConfigureKestrel(options =>
+                        {
+                            options.ListenAnyIP(5008);
+                        });
                 });
     }
 }

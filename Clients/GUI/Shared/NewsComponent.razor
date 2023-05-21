@@ -51,6 +51,9 @@
             newsCategories.Add(NewsGetter.GetNews(urlBusiness).ToList());
             newsCategories.Add(NewsGetter.GetNews(urlEconomics).ToList());
             newsCategories.Add(NewsGetter.GetNews(urlMarkets).ToList());
+            //       newsCategories.Add((await NewsGetter.GetNews(urlBusiness)).ToList());
+//newsCategories.Add((await NewsGetter.GetNews(urlEconomics)).ToList());
+   //         newsCategories.Add((await NewsGetter.GetNews(urlMarkets)).ToList());
         }
         catch (BadRequestException)
         {
@@ -62,5 +65,4 @@
     {
         GetNews();
     }
-
 }

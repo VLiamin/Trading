@@ -85,9 +85,10 @@ namespace TinkoffIntegrationLib
 
         public Transaction Trade(InternalTradeRequest request)
         {
+            return request.Transaction;
             try
             {
-                var transaction = request.Transaction;
+                Transaction transaction = request.Transaction;
                 var operation = transaction.Operation == DTO.MarketBrokerObjects.OperationType.Buy ? OperationType.Buy : OperationType.Sell;
                 var order = new LimitOrder(transaction.Figi, transaction.Count, operation, transaction.Price);
                 var result = context.PlaceLimitOrderAsync(order).Result;

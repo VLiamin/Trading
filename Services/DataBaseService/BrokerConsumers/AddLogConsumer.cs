@@ -17,7 +17,7 @@ namespace DataBaseService.BrokerConsumers
 
         public Task Consume(ConsumeContext<LogMessage> context)
         {
-            logRepository.Save(context.Message);
+          //  logRepository.Save(context.Message);
 
             return Task.FromResult(0);
         }

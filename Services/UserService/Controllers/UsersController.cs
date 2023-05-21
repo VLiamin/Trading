@@ -19,17 +19,25 @@ namespace UserService.Controllers
             this.logger = logger;
         }
 
+        [HttpGet("get")]
+        public async Task<UserInfoRequest> GetUser(
+            [FromServices] IGetUserByIdCommand command,
+            [FromHeader] Guid userId)
+        {
+            logger.LogInformation("Get user request received from GUI to UserService");
+            return await command.Execute(userId);
+        }
+
         [Route("create")]
         [HttpPost]
         public async Task<bool> CreateUser([FromServices] ICreateUserCommand command, [FromBody] CreateUserRequest request)
         {
             logger.LogInformation("Create user request received from GUI to UserService");
             return await command.Execute(request);
-         }
+        }
 
-        [Route("confirm")]
-        [HttpGet]
-        public async Task<bool> ConfirmUser([FromServices] IConfirmUserCommand command, [FromQuery] Guid secretToken)
+        [HttpGet("confirm")]
+        public async Task<bool> GetUser([FromServices] IConfirmUserCommand command, [FromQuery] Guid secretToken)
         {
             logger.LogInformation("Confirm user request received from Email to UserService");
             return await command.Execute(secretToken);
@@ -49,14 +57,6 @@ namespace UserService.Controllers
         {
             logger.LogInformation("Delete user request received from GUI to UserService");
             return await command.Execute(request);
-        }
-
-        [Route("get")]
-        [HttpGet]
-        public async Task<UserInfoRequest> GetUser([FromServices] IGetUserByIdCommand command, [FromHeader] Guid userId)
-        {
-            logger.LogInformation("Get user request received from GUI to UserService");
-            return await command.Execute(userId);
         }
     }
 }

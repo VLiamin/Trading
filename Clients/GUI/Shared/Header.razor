@@ -69,23 +69,25 @@
 
     private async void LoadImageSrc()
     {
-        var userToken = new UserToken
-        {
-            Body = await Storage.GetItemAsync<string>("token"),
-            UserId = await Storage.GetItemAsync<Guid>("id")
-        };
+        //        var userToken = new UserToken
+        //      {
+        //          Body = await Storage.GetItemAsync<string>("token"),
+        //        UserId = await Storage.GetItemAsync<Guid>("id")
+        //    };
 
-        if (userToken.Body == null)
-        {
-            return;
-        }
+        //     if (userToken.Body == null)
+        //      {
+        return;
+        //     }
 
- //       var requestResult = await UserGetter.GetUserById(userToken);
+        System.Threading.Thread.Sleep(5);
 
-   //     if (requestResult.Avatar != null)
-   //         imgSrc = AvatarGetter.GetUserImage(requestResult.Avatar, requestResult.AvatarExtension);
-  //      else
-  //          imgSrc = defaultImgSrc;
+        UserInfoRequest requestResult;// = await UserGetter.GetUserById(userToken);
+
+        if (requestResult?.Avatar != null)
+            imgSrc = AvatarGetter.GetUserImage(requestResult.Avatar, requestResult.AvatarExtension);
+        else
+            imgSrc = defaultImgSrc;
         StateHasChanged();
     }
 }

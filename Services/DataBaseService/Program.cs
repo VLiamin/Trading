@@ -15,6 +15,11 @@ namespace DataBaseService
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseKestrel()
+                        .ConfigureKestrel(options =>
+                        {
+                            options.ListenAnyIP(9804);
+                        });
                 });
     }
 }

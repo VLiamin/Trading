@@ -9,6 +9,8 @@ using DTO.BrokerRequests;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using DataBaseService.Database.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace DataBaseService.Repositories
 {
